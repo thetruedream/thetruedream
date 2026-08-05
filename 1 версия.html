@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RMS AI Copilot - Прототип</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body {
+      background-color: #F3F4F7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1E293B;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 3px;
+    }
+    .btn-primary {
+      background-color: #5B73A1;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #4A608A;
+    }
+    .tab-btn.active {
+      background-color: #5B73A1;
+      color: white;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden text-sm">
+
+  <!-- Top Navigation Bar / Tabs -->
+  <header class="bg-white border-b border-gray-200 px-4 py-2.5 flex items-center justify-between shrink-0 shadow-sm z-20">
+    <div class="flex items-center space-x-3">
+      <div class="bg-[#5B73A1] text-white p-1.5 rounded-lg flex items-center justify-center font-bold text-xs">
+        RMS
+      </div>
+      <h1 class="font-bold text-gray-800 text-base flex items-center gap-2">
+        <span>RMS AI Copilot</span>
+        <span class="text-xs font-normal bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Прототип / ИИ Сценарии</span>
+      </h1>
+    </div>
+
+    <!-- Navigation Tabs for Frames/User Stories -->
+    <nav class="flex space-x-1 bg-gray-100 p-1 rounded-lg border border-gray-200">
+      <button onclick="switchTab('frame1')" id="tab-frame1" class="tab-btn active px-3 py-1.5 rounded-md text-xs transition flex items-center gap-1.5">
+        <i data-lucide="layout"></i> US1/US4: Виджет & Drawer
+      </button>
+      <button onclick="switchTab('frame2')" id="tab-frame2" class="tab-btn px-3 py-1.5 rounded-md text-xs text-gray-600 hover:text-gray-900 transition flex items-center gap-1.5">
+        <i data-lucide="edit-3"></i> US1: Редактирование рейсов (FC)
+      </button>
+      <button onclick="switchTab('frame3')" id="tab-frame3" class="tab-btn px-3 py-1.5 rounded-md text-xs text-gray-600 hover:text-gray-900 transition flex items-center gap-1.5">
+        <i data-lucide="layers"></i> US3: Массовые действия
+      </button>
+    </nav>
+
+    <div class="flex items-center space-x-3">
+      <span class="text-xs text-gray-500">Аналитик: <b>Testov Test</b></span>
+      <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-medium text-slate-700">TT</div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-14 bg-white border-r border-gray-200 flex flex-col items-center py-4 space-y-5 shrink-0 z-10">
+      <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg hover:text-[#5B73A1]" title="Обзор"><i data-lucide="layout-grid"></i></button>
+      <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg hover:text-[#5B73A1]" title="Управление полётами (FC)"><i data-lucide="plane"></i></button>
+      <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg hover:text-[#5B73A1]" title="Детали рейса (FD)"><i data-lucide="bar-chart-2"></i></button>
+      <button class="p-2 text-blue-600 bg-blue-50 rounded-lg" title="Журнал флагов / AI"><i data-lucide="flag"></i></button>
+      <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg hover:text-[#5B73A1]" title="Ограничения"><i data-lucide="scissors"></i></button>
+      <div class="mt-auto flex flex-col space-y-4">
+        <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="История"><i data-lucide="history"></i></button>
+        <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Настройки"><i data-lucide="settings"></i></button>
+      </div>
+    </aside>
+
+    <!-- CONTENT PANELS -->
+    <main class="flex-1 overflow-auto bg-[#F3F4F7] p-6 relative custom-scroll">
+
+      <!-- ================= FRAME 1: US1 & US4 (DETAILED FLIGHT & COPILOT OPTIONS) ================= -->
+      <section id="frame1" class="space-y-6">
+        <div class="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+          <div>
+            <div class="text-xs text-gray-500 mb-1">Рейс SU-1420 • Москва (SVO) — Екатеринбург (SVX) • 23/07/2026</div>
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-3">
+              Детали рейса SU-1420 
+              <span class="text-xs bg-green-100 text-green-800 font-semibold px-2.5 py-0.5 rounded-full">NDO: 14 дней</span>
+              <span class="text-xs bg-blue-100 text-blue-800 font-semibold px-2.5 py-0.5 rounded-full">LF: 84%</span>
+            </h2>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="toggleDrawer()" class="px-3 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-medium flex items-center gap-2 border border-slate-300">
+              <i data-lucide="panel-right-open"></i> Переключить вид Drawer (Вариант 2)
+            </button>
+          </div>
+        </div>
+
+        <!-- Frame 1 Options Display -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- OPTION A: FLOATING WIDGET VARIANT 1 (ACTION LEVEL) -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4 relative">
+            <div class="absolute -top-3 left-4 bg-indigo-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow">
+              Вариант 1 (Плавающий виджет) — Вариант А: Совокупное действие
+            </div>
+
+            <div class="pt-2 flex items-center justify-between border-b pb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </div>
+                <span class="font-bold text-gray-800">AI Copilot Recommendation</span>
+              </div>
+              <span class="text-xs text-gray-400">Сформировано 10 сек назад</span>
+            </div>
+
+            <div class="bg-indigo-50/50 p-3.5 rounded-lg border border-indigo-100 space-y-2">
+              <div class="flex items-start justify-between">
+                <div>
+                  <span class="text-xs font-semibold text-indigo-900 block">Рекомендуемое действие:</span>
+                  <span class="text-base font-bold text-indigo-700">Move LAF Up (+1 шаг)</span>
+                </div>
+                <span class="bg-green-100 text-green-700 font-bold text-xs px-2 py-0.5 rounded">+15% к Yield</span>
+              </div>
+              <p class="text-xs text-gray-600">
+                Фиксируется повышенный темп бронирований за последние 24 часа. Конкуренты подняли минимальный тариф.
+              </p>
+            </div>
+
+            <!-- Action Buttons for US1, US2, US4 -->
+            <div class="flex items-center justify-between pt-1">
+              <button onclick="openModal('rationaleModal')" class="text-xs text-indigo-600 font-semibold hover:underline flex items-center gap-1">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i> Показать обоснование (US2)
+              </button>
+              <div class="flex gap-2">
+                <button onclick="openModal('declineModal')" class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg border border-gray-300">
+                  Отклонить
+                </button>
+                <button onclick="applyActionSuccess('SU-1420')" class="px-3 py-1.5 text-xs font-medium btn-primary rounded-lg shadow-sm">
+                  Применить
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OPTION A: FLOATING WIDGET VARIANT 2 (PARAMETRIC LEVEL) -->
+          <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4 relative">
+            <div class="absolute -top-3 left-4 bg-emerald-600 text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow">
+              Вариант 1 (Плавающий виджет) — Вариант Б: Точечные параметры
+            </div>
+
+            <div class="pt-2 flex items-center justify-between border-b pb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+                  <i data-lucide="sliders" class="w-4 h-4"></i>
+                </div>
+                <span class="font-bold text-gray-800">Точечная коррекция параметров</span>
+              </div>
+              <span class="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium">8 параметров</span>
+            </div>
+
+            <!-- Parametric Table -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-gray-50 border-y border-gray-200 text-gray-500">
+                    <th class="py-1.5 px-2">Параметр</th>
+                    <th class="py-1.5 px-2">Pr</th>
+                    <th class="py-1.5 px-2">LS</th>
+                    <th class="py-1.5 px-2">Min</th>
+                    <th class="py-1.5 px-2">Fix</th>
+                    <th class="py-1.5 px-2">Adj</th>
+                    <th class="py-1.5 px-2">Ovb</th>
+                    <th class="py-1.5 px-2">Cmb</th>
+                    <th class="py-1.5 px-2">Brrw</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-gray-100 text-gray-500">
+                    <td class="py-1 px-2 font-medium">Текущее</td>
+                    <td class="py-1 px-2">12</td>
+                    <td class="py-1 px-2">A</td>
+                    <td class="py-1 px-2">100</td>
+                    <td class="py-1 px-2">0</td>
+                    <td class="py-1 px-2">+2</td>
+                    <td class="py-1 px-2">5</td>
+                    <td class="py-1 px-2">On</td>
+                    <td class="py-1 px-2">Off</td>
+                  </tr>
+                  <tr class="bg-emerald-50/50 text-emerald-900 font-bold">
+                    <td class="py-1.5 px-2 text-emerald-700">ИИ Совет</td>
+                    <td class="py-1.5 px-2">14</td>
+                    <td class="py-1.5 px-2">B</td>
+                    <td class="py-1.5 px-2">120</td>
+                    <td class="py-1.5 px-2">0</td>
+                    <td class="py-1.5 px-2">+4</td>
+                    <td class="py-1.5 px-2">3</td>
+                    <td class="py-1.5 px-2">On</td>
+                    <td class="py-1.5 px-2">Off</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+              <button onclick="openModal('rationaleModal')" class="text-xs text-emerald-700 font-semibold hover:underline flex items-center gap-1">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i> Показать обоснование (US2)
+              </button>
+              <div class="flex gap-2">
+                <button onclick="openModal('declineModal')" class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg border border-gray-300">
+                  Отклонить
+                </button>
+                <button onclick="applyActionSuccess('SU-1420')" class="px-3 py-1.5 text-xs font-medium btn-primary rounded-lg shadow-sm">
+                  Применить параметры
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Simulated Main Flight Data Card -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+          <h3 class="font-bold text-gray-700 text-sm border-b pb-2">История загрузки и динамика подклассов рейса SU-1420</h3>
+          <div class="grid grid-cols-4 gap-4">
+            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <span class="text-xs text-gray-500 block">Выручка (Fact)</span>
+              <span class="text-lg font-bold text-gray-800">1,240,000 ₽</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <span class="text-xs text-gray-500 block">Прогноз LoadFactor</span>
+              <span class="text-lg font-bold text-blue-600">92%</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <span class="text-xs text-gray-500 block">Свободно мест</span>
+              <span class="text-lg font-bold text-gray-800">28 из 180</span>
+            </div>
+            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <span class="text-xs text-gray-500 block">Темп бронирования (Speed)</span>
+              <span class="text-lg font-bold text-green-600">+4.2 мест/день</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DRAWER SLIDE-OVER FOR VARIANT 2 (OPTION B) -->
+      <aside id="drawer" class="hidden fixed inset-y-0 right-0 w-96 bg-white border-l border-gray-200 shadow-2xl p-6 z-40 space-y-5 overflow-y-auto transform transition-transform">
+        <div class="flex items-center justify-between border-b pb-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="bot" class="w-5 h-5 text-indigo-600"></i>
+            <h3 class="font-bold text-gray-800 text-base">Вариант 2: Панель Copilot</h3>
+          </div>
+          <button onclick="toggleDrawer()" class="p-1 hover:bg-gray-100 rounded-lg text-gray-500"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 space-y-3">
+          <span class="text-xs font-bold text-indigo-900 bg-indigo-200/60 px-2 py-0.5 rounded">Рекомендация по рейсу</span>
+          <h4 class="font-bold text-indigo-950 text-base">Cabin Actions / Move LAF Up</h4>
+          <p class="text-xs text-indigo-800 leading-relaxed">
+            Модель AI обнаружила аномальный всплеск спроса на даты 23.07 - 25.07. Рекомендуется поднять минимально доступный подкласс.
+          </p>
+        </div>
+
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Факторы принятия решения</h4>
+          <div class="p-2.5 bg-gray-50 rounded-lg text-xs space-y-1.5 border border-gray-200">
+            <div class="flex justify-between"><span class="text-gray-500">NDO:</span><span class="font-semibold text-gray-800">14 дней</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Текущий LF:</span><span class="font-semibold text-gray-800">84% (+8% к норме)</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Конкурент (S7):</span><span class="font-semibold text-red-600">Закрыл промо-тарифы</span></div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t space-y-2">
+          <button onclick="applyActionSuccess('SU-1420')" class="w-full py-2 btn-primary rounded-lg font-medium text-xs shadow">
+            Применить рекомендацию
+          </button>
+          <button onclick="openModal('rationaleModal')" class="w-full py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-medium text-xs border border-slate-300">
+            Показать полное обоснование
+          </button>
+          <button onclick="openModal('declineModal')" class="w-full py-2 text-gray-500 hover:text-gray-700 text-xs text-center font-medium">
+            Отклонить совет
+          </button>
+        </div>
+      </aside>
+
+      <!-- ================= FRAME 2: US1 (MODAL EDIT 2 FLIGHTS) ================= -->
+      <section id="frame2" class="hidden space-y-6">
+        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">User Story 1: Интеграция Copilot в окно редактирования рейсов (FC)</h2>
+            <p class="text-xs text-gray-500">Нажмите на кнопку ниже, чтобы открыть модальное окно с рекомендацией ИИ в выделенной области.</p>
+          </div>
+          <button onclick="openModal('editModal')" class="px-4 py-2 btn-primary rounded-lg text-xs font-semibold shadow flex items-center gap-2">
+            <i data-lucide="edit"></i> Открыть окно "Edit 2 Flights"
+          </button>
+        </div>
+
+        <!-- Static Preview of Modal Layout -->
+        <div class="bg-white rounded-xl border border-gray-300 shadow-md p-6 max-w-4xl mx-auto space-y-4">
+          <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="font-bold text-gray-800 text-lg">Edit 2 Flights</h3>
+            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded border">Окно управления (FC)</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Side: Standard Controls -->
+            <div class="space-y-4 pr-2 border-r border-gray-200">
+              <span class="text-xs font-bold text-gray-400 uppercase">Стандартные настройки</span>
+              <div class="space-y-1.5">
+                <label class="text-xs text-gray-600 font-medium">Action</label>
+                <select class="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-blue-500">
+                  <option>Cabin Actions / LAF Actions / Move LAF Up</option>
+                  <option>Cabin Actions / Set Fix</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                  <label class="text-xs text-gray-600 font-medium">Offset Y</label>
+                  <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                    <button class="px-3 bg-gray-100 hover:bg-gray-200 border-r text-gray-600">-</button>
+                    <input type="text" value="0" class="w-full text-center text-xs py-1.5 focus:outline-none">
+                    <button class="px-3 bg-gray-100 hover:bg-gray-200 border-l text-gray-600">+</button>
+                  </div>
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-xs text-gray-600 font-medium">Set available seats Y</label>
+                  <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                    <button class="px-3 bg-gray-100 hover:bg-gray-200 border-r text-gray-600">-</button>
+                    <input type="text" value="0" class="w-full text-center text-xs py-1.5 focus:outline-none">
+                    <button class="px-3 bg-gray-100 hover:bg-gray-200 border-l text-gray-600">+</button>
+                  </div>
+                </div>
+              </div>
+              <button class="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1">
+                + Добавить новое поле
+              </button>
+            </div>
+
+            <!-- Right Side: AI Copilot Integrated Widget (Inside Red Box Area) -->
+            <div class="border-2 border-dashed border-red-400 bg-red-50/20 rounded-xl p-4 space-y-3 relative">
+              <span class="absolute -top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow">
+                Область рекомендации Copilot
+              </span>
+
+              <div class="flex items-center gap-2 text-indigo-700 font-bold border-b border-indigo-100 pb-2">
+                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+                <span class="text-xs">Рекомендация AI Copilot</span>
+              </div>
+
+              <div class="space-y-1.5">
+                <span class="text-xs font-semibold text-gray-700">Предлагаемое действие:</span>
+                <p class="text-xs bg-white p-2.5 rounded-lg border border-indigo-200 font-medium text-indigo-900 shadow-sm">
+                  Cabin Actions / LAF Actions / Move LAF Up
+                </p>
+              </div>
+
+              <p class="text-[11px] text-gray-600 leading-relaxed">
+                Совет сформирован на основе исторического тренда NDO и высокого коэффициента загрузки (LF 84%).
+              </p>
+
+              <div class="pt-2 flex gap-2">
+                <button onclick="applyActionSuccess('Выбранные рейсы')" class="flex-1 py-1.5 btn-primary rounded-lg text-xs font-medium shadow-sm">
+                  Применить совет
+                </button>
+                <button onclick="openModal('declineModal')" class="px-3 py-1.5 bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-lg text-xs">
+                  Отклонить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FRAME 3: US3 (BATCH APPROVAL & MASS ACTIONS) ================= -->
+      <section id="frame3" class="hidden space-y-6">
+        
+        <!-- Filter Panel Matching "Журнал флагов" Screenshot -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+              <i data-lucide="filter" class="w-4 h-4 text-slate-600"></i> Фильтры поиска рейсов
+            </h3>
+            <span class="text-xs text-blue-600 hover:underline cursor-pointer">Настройки: от 0 до 0</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="text-[11px] text-gray-500 block mb-1">Дата вылета</label>
+              <div class="flex items-center border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white">
+                <input type="text" value="23/07/2026 — 23/07/2026" class="w-full text-xs text-gray-700 outline-none">
+                <i data-lucide="calendar" class="w-3.5 h-3.5 text-gray-400"></i>
+              </div>
+            </div>
+
+            <div>
+              <label class="text-[11px] text-gray-500 block mb-1">Код аэропорта</label>
+              <input type="text" placeholder="Например LLK, AEP" class="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs">
+            </div>
+
+            <div>
+              <label class="text-[11px] text-gray-500 block mb-1">Маршрут</label>
+              <input type="text" placeholder="Например SVXKHV, CEKDYU" class="w-full border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs">
+            </div>
+
+            <div>
+              <label class="text-[11px] text-gray-500 block mb-1">Ответственный</label>
+              <div class="border border-gray-300 rounded-lg px-2 py-1 bg-white flex items-center justify-between">
+                <span class="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-700 flex items-center gap-1">
+                  Testov Test <i data-lucide="x" class="w-3 h-3 text-gray-400 cursor-pointer"></i>
+                </span>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <div class="flex gap-2">
+              <button onclick="filterTable()" class="px-6 py-2 btn-primary rounded-lg text-xs font-semibold shadow-sm">
+                Поиск
+              </button>
+              <button class="px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg text-xs font-medium border border-gray-300">
+                Очистить
+              </button>
+            </div>
+            <span class="text-xs text-gray-500">Найдено 4 стандартных рекомендаций ИИ</span>
+          </div>
+        </div>
+
+        <!-- Success Alert Notification -->
+        <div id="batchSuccessAlert" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-emerald-900 flex items-center justify-between shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center font-bold">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-xs">Пакетные изменения успешно применены!</h4>
+              <p class="text-xs text-emerald-700">Успешно обновлено рейсов: <b>3</b>. Ошибок: <b>0</b>.</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('batchSuccessAlert').classList.add('hidden')" class="text-xs text-emerald-700 hover:underline">Закрыть</button>
+        </div>
+
+        <!-- Table View for Batch Approval (US3) -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-2 cursor-pointer font-semibold text-xs text-gray-700">
+                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4">
+                Выбрать все
+              </label>
+              <span id="selectedCount" class="text-xs bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full font-bold">Выбрано: 0</span>
+            </div>
+
+            <button id="batchApplyBtn" onclick="applyBatchActions()" disabled class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg text-xs font-bold transition-all shadow-sm cursor-not-allowed">
+              Применить выбранные рекомендации
+            </button>
+          </div>
+
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-gray-100/80 border-b border-gray-200 text-gray-600">
+                <th class="py-3 px-4 w-10"></th>
+                <th class="py-3 px-4">Рейс</th>
+                <th class="py-3 px-4">Маршрут</th>
+                <th class="py-3 px-4">Дата вылета</th>
+                <th class="py-3 px-4">NDO / LF</th>
+                <th class="py-3 px-4">Рекомендация ИИ</th>
+                <th class="py-3 px-4">Уровень риска</th>
+                <th class="py-3 px-4 text-right">Действие</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr class="hover:bg-blue-50/30 transition">
+                <td class="py-3 px-4"><input type="checkbox" class="row-checkbox rounded text-blue-600 w-4 h-4" onchange="updateSelectedCount()"></td>
+                <td class="py-3 px-4 font-bold text-gray-800">SU-1420</td>
+                <td class="py-3 px-4">SVO — SVX</td>
+                <td class="py-3 px-4">23/07/2026</td>
+                <td class="py-3 px-4">NDO 14 • <span class="text-blue-600 font-bold">84%</span></td>
+                <td class="py-3 px-4 font-semibold text-indigo-700 bg-indigo-50/50 rounded px-2 py-1 inline-block">Move LAF Up (+1)</td>
+                <td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-[11px] font-bold">Низкий</span></td>
+                <td class="py-3 px-4 text-right"><button onclick="applyActionSuccess('SU-1420')" class="text-blue-600 hover:underline font-semibold">Применить</button></td>
+              </tr>
+              <tr class="hover:bg-blue-50/30 transition">
+                <td class="py-3 px-4"><input type="checkbox" class="row-checkbox rounded text-blue-600 w-4 h-4" onchange="updateSelectedCount()"></td>
+                <td class="py-3 px-4 font-bold text-gray-800">SU-1422</td>
+                <td class="py-3 px-4">SVO — SVX</td>
+                <td class="py-3 px-4">23/07/2026</td>
+                <td class="py-3 px-4">NDO 14 • <span class="text-blue-600 font-bold">79%</span></td>
+                <td class="py-3 px-4 font-semibold text-indigo-700 bg-indigo-50/50 rounded px-2 py-1 inline-block">Set Fix = 10</td>
+                <td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-[11px] font-bold">Низкий</span></td>
+                <td class="py-3 px-4 text-right"><button onclick="applyActionSuccess('SU-1422')" class="text-blue-600 hover:underline font-semibold">Применить</button></td>
+              </tr>
+              <tr class="hover:bg-blue-50/30 transition">
+                <td class="py-3 px-4"><input type="checkbox" class="row-checkbox rounded text-blue-600 w-4 h-4" onchange="updateSelectedCount()"></td>
+                <td class="py-3 px-4 font-bold text-gray-800">SU-1804</td>
+                <td class="py-3 px-4">SVO — KZN</td>
+                <td class="py-3 px-4">23/07/2026</td>
+                <td class="py-3 px-4">NDO 10 • <span class="text-blue-600 font-bold">91%</span></td>
+                <td class="py-3 px-4 font-semibold text-indigo-700 bg-indigo-50/50 rounded px-2 py-1 inline-block">Move LAF Up (+2)</td>
+                <td class="py-3 px-4"><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[11px] font-bold">Средний</span></td>
+                <td class="py-3 px-4 text-right"><button onclick="applyActionSuccess('SU-1804')" class="text-blue-600 hover:underline font-semibold">Применить</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= MODALS SECTION ================= -->
+
+  <!-- MODAL: EDIT 2 FLIGHTS (FC US1) -->
+  <div id="editModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in duration-150">
+      <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <h3 class="font-bold text-gray-800 text-base">Edit 2 Flights</h3>
+        <button onclick="closeModal('editModal')" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Side: Standard Controls -->
+        <div class="space-y-4 pr-2 border-r border-gray-200">
+          <div class="space-y-1.5">
+            <label class="text-xs text-gray-600 font-medium">Action</label>
+            <select class="w-full border border-gray-300 rounded-lg p-2 text-xs bg-white">
+              <option>Cabin Actions / LAF Actions / Move LAF Up</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <label class="text-xs text-gray-600 font-medium">Offset Y</label>
+              <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                <button class="px-3 bg-gray-100 hover:bg-gray-200 border-r text-gray-600">-</button>
+                <input type="text" value="0" class="w-full text-center text-xs py-1.5">
+                <button class="px-3 bg-gray-100 hover:bg-gray-200 border-l text-gray-600">+</button>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-xs text-gray-600 font-medium">Set available seats Y</label>
+              <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+                <button class="px-3 bg-gray-100 hover:bg-gray-200 border-r text-gray-600">-</button>
+                <input type="text" value="0" class="w-full text-center text-xs py-1.5">
+                <button class="px-3 bg-gray-100 hover:bg-gray-200 border-l text-gray-600">+</button>
+              </div>
+            </div>
+          </div>
+          <button class="text-xs text-blue-600 font-semibold hover:underline">+ Добавить новое поле</button>
+        </div>
+
+        <!-- Right Side: Integrated Recommendation Area (Red Box Location) -->
+        <div class="border-2 border-dashed border-red-400 bg-red-50/20 rounded-xl p-4 space-y-3 relative">
+          <span class="absolute -top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+            Область рекомендации
+          </span>
+
+          <div class="flex items-center gap-2 text-indigo-700 font-bold border-b border-indigo-100 pb-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+            <span class="text-xs">Рекомендация AI Copilot</span>
+          </div>
+
+          <p class="text-xs font-semibold text-gray-800">
+            Рекомендуется применить <b>Move LAF Up</b> для оптимизации доходности.
+          </p>
+          <p class="text-[11px] text-gray-600">
+            Основано на всплеске спроса и закрытии дешевых классов у конкурентов.
+          </p>
+
+          <div class="pt-2 flex gap-2">
+            <button onclick="applyActionSuccess('Выбранные рейсы'); closeModal('editModal');" class="flex-1 py-1.5 btn-primary rounded-lg text-xs font-medium shadow-sm">
+              Применить совет
+            </button>
+            <button onclick="closeModal('editModal'); openModal('declineModal');" class="px-3 py-1.5 bg-white text-gray-600 border border-gray-300 hover:bg-gray-50 rounded-lg text-xs">
+              Отклонить
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
+        <button onclick="closeModal('editModal')" class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-xs font-medium">Отменить</button>
+        <button onclick="applyActionSuccess('Рейсы'); closeModal('editModal');" class="px-4 py-2 btn-primary rounded-lg text-xs font-medium shadow-sm">Применить изменения</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: US2 (RATIONALE BREAKDOWN) -->
+  <div id="rationaleModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-xl overflow-hidden space-y-4 p-6">
+      <div class="flex justify-between items-center border-b pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i>
+          <h3 class="font-bold text-gray-800 text-base">Обоснование рекомендации (US2)</h3>
+        </div>
+        <button onclick="closeModal('rationaleModal')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x"></i></button>
+      </div>
+
+      <div class="space-y-3 max-h-96 overflow-y-auto pr-1 custom-scroll text-xs">
+        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+          <span class="font-bold text-slate-800 block">1. Динамика спроса и темп продаж</span>
+          <p class="text-slate-600">Скорость бронирования за последние 48 часов превышает историческую норму на 22%. Ожидаемый LF без действий: 96%.</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+          <span class="font-bold text-slate-800 block">2. Конкурентное окружение</span>
+          <p class="text-slate-600">Авиакомпания S7 повысила минимальный доступный тариф на маршруте SVO-SVX на 1,500 ₽.</p>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-1">
+          <span class="font-bold text-slate-800 block">3. Исторический контекст аналогичных рейсов</span>
+          <p class="text-slate-600">В прошлом сезоне аналогичные рейсы с NDO 14 при закрытии LAF показовывали прирост Yield на +12%.</p>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t flex justify-between items-center">
+        <button class="text-xs text-blue-600 hover:underline font-semibold flex items-center gap-1">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Перейти к аналогичным рейсам
+        </button>
+        <button onclick="closeModal('rationaleModal')" class="px-4 py-1.5 btn-primary rounded-lg text-xs font-medium">
+          Понятно
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: US4 (DECLINE REASON / FEEDBACK) -->
+  <div id="declineModal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md overflow-hidden p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-gray-800 text-base">Отклонить рекомендацию (US4)</h3>
+        <button onclick="closeModal('declineModal')" class="text-gray-400 hover:text-gray-600"><i data-lucide="x"></i></button>
+      </div>
+
+      <p class="text-xs text-gray-600">Пожалуйста, укажите причину отклонения, чтобы помочь модели дообучиться:</p>
+
+      <div class="space-y-2 text-xs">
+        <label class="flex items-center gap-2 p-2 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+          <input type="radio" name="declineReason" value="holiday" class="text-blue-600">
+          <span>Неучтенный праздник / мега-событие</span>
+        </label>
+        <label class="flex items-center gap-2 p-2 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+          <input type="radio" name="declineReason" value="anomaly" class="text-blue-600">
+          <span>Аномалия спроса (групповой бронь/сбой)</span>
+        </label>
+        <label class="flex items-center gap-2 p-2 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+          <input type="radio" name="declineReason" value="competitor" class="text-blue-600">
+          <span>Неактуальные цены конкурентов</span>
+        </label>
+        <label class="flex items-center gap-2 p-2 rounded border border-gray-200 hover:bg-gray-50 cursor-pointer">
+          <input type="radio" name="declineReason" value="other" class="text-blue-600" onchange="toggleOtherText(true)">
+          <span>Другое</span>
+        </label>
+      </div>
+
+      <div id="otherTextContainer" class="hidden space-y-1">
+        <label class="text-[11px] text-gray-500">Комментарий для команды разработки:</label>
+        <textarea placeholder="Введите причину..." class="w-full border border-gray-300 rounded-lg p-2 text-xs h-16 outline-none focus:ring-1 focus:ring-blue-500"></textarea>
+      </div>
+
+      <div class="pt-2 flex justify-end gap-2">
+        <button onclick="closeModal('declineModal')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs">Отмена</button>
+        <button onclick="submitDecline()" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs shadow-sm">Отправить фидбек</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT FOR INTERACTIVITY -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Switcher
+    function switchTab(tabId) {
+      ['frame1', 'frame2', 'frame3'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+        document.getElementById('tab-' + id).classList.remove('active');
+        document.getElementById('tab-' + id).classList.add('text-gray-600');
+      });
+
+      document.getElementById(tabId).classList.remove('hidden');
+      document.getElementById('tab-' + tabId).classList.add('active');
+      document.getElementById('tab-' + tabId).classList.remove('text-gray-600');
+    }
+
+    // Toggle Drawer Panel (Frame 1)
+    function toggleDrawer() {
+      const drawer = document.getElementById('drawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    // Modal Helpers
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    // Decline "Other" Text Toggle
+    function toggleOtherText(show) {
+      const container = document.getElementById('otherTextContainer');
+      if (show) container.classList.remove('hidden');
+    }
+
+    // Batch Select Checkboxes
+    function toggleSelectAll(master) {
+      const checkboxes = document.querySelectorAll('.row-checkbox');
+      checkboxes.forEach(cb => cb.checked = master.checked);
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const checked = document.querySelectorAll('.row-checkbox:checked').length;
+      document.getElementById('selectedCount').innerText = 'Выбрано: ' + checked;
+      
+      const btn = document.getElementById('batchApplyBtn');
+      if (checked > 0) {
+        btn.disabled = false;
+        btn.className = "px-4 py-2 btn-primary text-white rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer";
+        btn.innerText = `Применить выбранные (${checked})`;
+      } else {
+        btn.disabled = true;
+        btn.className = "px-4 py-2 bg-gray-300 text-gray-500 rounded-lg text-xs font-bold transition-all shadow-sm cursor-not-allowed";
+        btn.innerText = "Применить выбранные рекомендации";
+      }
+    }
+
+    // Success Toast Simulation
+    function applyActionSuccess(flight) {
+      alert(`Успешно! Рекомендация AI применилась к рейсу: ${flight}`);
+    }
+
+    function applyBatchActions() {
+      const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+      document.getElementById('batchSuccessAlert').classList.remove('hidden');
+      alert(`Успешно выполнено! Рекомендации применены для ${checkedCount} рейсов.`);
+    }
+
+    function submitDecline() {
+      closeModal('declineModal');
+      alert("Обратная связь сохранена! Данные переданы модели для дообучения.");
+    }
+  </script>
+</body>
+</html>

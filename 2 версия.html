@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMS AI Copilot - Прототип</title>
+    <style>
+        :root {
+            --bg-main: #f4f6f9;
+            --sidebar-bg: #ffffff;
+            --sidebar-border: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --accent-green: #10b981;
+            --accent-bg-green: #ecfdf5;
+            --accent-blue: #ef4444;
+            --nav-active-bg: #e0e7ff;
+            --nav-active-color: #4f46e5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        /* SIDEBAR (Правка 1) */
+        .sidebar {
+            width: 60px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .sidebar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .nav-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: var(--nav-active-bg);
+            color: var(--nav-active-color);
+        }
+
+        /* AI Icon - Правка 1 */
+        .nav-item.ai-icon-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 11px;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+        }
+
+        .nav-item.ai-icon-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* TOP HEADER */
+        .header {
+            height: 56px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title-zone {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: #1e293b;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .header-tabs {
+            display: flex;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .tab-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--text-main);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* CONTENT TAB PANELS */
+        .tab-panel {
+            display: none;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* CARDS AND WRAPPERS */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .flight-header-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 14px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            margin-bottom: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-green { background: #dcfce7; color: #15803d; }
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+
+        /* WIDGET GRID */
+        .widget-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .copilot-card {
+            border: 1px solid #cbd5e1;
+            position: relative;
+        }
+
+        .copilot-card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .copilot-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .rec-action {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e1b4b;
+            margin: 8px 0;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 12px;
+            padding: 0;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-link:hover { color: #1d4ed8; }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+
+        /* TABLE STYLING (Правка 5) */
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        .param-table th, .param-table td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 8px;
+            text-align: center;
+        }
+        .param-table th {
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .param-table td input {
+            width: 50px;
+            text-align: center;
+            padding: 3px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+        }
+
+        /* METRICS PANEL (Правка 3 - Без Выручки) */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+        .metric-label { font-size: 11px; color: #64748b; margin-bottom: 4px; }
+        .metric-value { font-size: 20px; font-weight: 700; color: #0f172a; }
+
+        /* ACTION SELECTOR SYSTEM (Правка 4 & 6) */
+        .action-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 10px;
+        }
+
+        .dropdown-menu-wrapper {
+            position: relative;
+            width: 320px;
+        }
+
+        .dropdown-select-btn {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            background: #ffffff;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cascade-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            display: flex;
+            z-index: 100;
+            margin-top: 4px;
+        }
+
+        .menu-column {
+            width: 180px;
+            border-right: 1px solid #f1f5f9;
+            padding: 4px 0;
+        }
+        .menu-column:last-child { border-right: none; }
+
+        .menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #334155;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: #f1f5f9;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        /* PARAMETER INPUTS (Правка 4) */
+        .param-inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .param-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .param-control-group label {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .number-stepper {
+            display: flex;
+            align-items: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: #ffffff;
+            overflow: hidden;
+            width: 110px;
+        }
+        .number-stepper button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #f1f5f9;
+            cursor: pointer;
+            font-weight: bold;
+            color: #475569;
+        }
+        .number-stepper button:hover { background: #e2e8f0; }
+        .number-stepper input {
+            width: 54px;
+            border: none;
+            text-align: center;
+            font-size: 12px;
+            outline: none;
+        }
+
+        /* MODAL FOR US2 (Правка 2) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-container {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 600px;
+            max-width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .modal-footer {
+            padding: 12px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .factor-box {
+            background: #f8fafc;
+            border-left: 3px solid #3b82f6;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* US3 FILTERS & CALENDAR (Правка 7) */
+        .filter-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            position: relative;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filter-group label {
+            font-size: 11px;
+            color: #64748b;
+        }
+        .filter-input {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 12px;
+            width: 100%;
+        }
+        .date-range-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .date-range-wrapper input {
+            padding-right: 30px;
+            cursor: pointer;
+        }
+        .calendar-icon {
+            position: absolute;
+            right: 8px;
+            cursor: pointer;
+            color: #3b82f6;
+        }
+
+        /* TWO-MONTH CALENDAR POPUP (Правка 7 - Скриншот 2) */
+        .calendar-popup {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding: 16px;
+            z-index: 500;
+            display: none;
+            width: 520px;
+        }
+        .calendar-popup.open { display: block; }
+        .calendar-months {
+            display: flex;
+            gap: 20px;
+        }
+        .calendar-month { flex: 1; }
+        .calendar-month-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+            font-size: 11px;
+        }
+        .day-header { font-weight: bold; color: #64748b; padding: 4px 0; }
+        .day-cell {
+            padding: 6px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .day-cell:hover { background: #f1f5f9; }
+        .day-cell.selected { background: #3b82f6; color: #fff; }
+        .day-cell.range { background: #dbeafe; color: #1e3a8a; }
+        .day-cell.muted { color: #cbd5e1; }
+
+        .calendar-presets {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 12px;
+            padding-top: 10px;
+            font-size: 11px;
+            color: #64748b;
+        }
+        .preset-btn {
+            color: #2563eb;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .preset-btn:hover { text-decoration: underline; }
+
+        .filter-actions {
+            grid-column: span 5;
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. SIDEBAR (Правка 1: Иконка AI) -->
+    <div class="sidebar">
+        <div class="sidebar-group">
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+
+            <!-- Иконка AI на месте красного прямоугольника (Правка 1) -->
+            <div class="nav-item ai-icon-btn" title="AI Copilot">
+                AI
+            </div>
+        </div>
+
+        <div class="sidebar-group">
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 001-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            </div>
+            <div class="nav-item">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title-zone">
+                <span class="logo-badge">RMS</span>
+                <span style="font-weight: 700; font-size: 14px;">RMS AI Copilot</span>
+                <span style="color: #64748b; font-size: 11px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">Прототип / ИИ Сценарии</span>
+            </div>
+
+            <div class="header-tabs">
+                <button class="tab-btn active" onclick="switchTab('us1-4')">US1/US4: Виджет & Drawer</button>
+                <button class="tab-btn" onclick="switchTab('us1-edit')">US1: Редактирование рейсов (FC)</button>
+                <button class="tab-btn" onclick="switchTab('us3-mass')">US3: Массовые действия</button>
+            </div>
+
+            <div class="user-info">
+                <span>Аналитик: <b>Testov Test</b></span>
+                <div class="avatar">TT</div>
+            </div>
+        </div>
+
+        <!-- TAB 1: US1/US4 & US2 -->
+        <div id="tab-us1-4" class="tab-panel active">
+            
+            <div class="flight-header-card">
+                <div>
+                    <span style="color: #64748b;">Рейс SU-1420 • Москва (SVO) — Екатеринбург (SVX) • 23/07/2026</span>
+                    <h2 style="font-size: 18px; margin-top: 2px;">Детали рейса SU-1420 
+                        <span class="badge badge-green">NDO: 14 дней</span>
+                        <span class="badge badge-blue">LF: 84%</span>
+                    </h2>
+                </div>
+                <button class="btn">Переключить вид Drawer (Вариант 2)</button>
+            </div>
+
+            <!-- COPILOT WIDGETS -->
+            <div class="widget-grid">
+                
+                <!-- Вариант 1 (А) -->
+                <div class="card copilot-card">
+                    <div class="copilot-card-header">
+                        <div class="copilot-title">
+                            <svg width="16" height="16" fill="#6366f1" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path></svg>
+                            AI Copilot Recommendation
+                        </div>
+                        <span style="font-size: 11px; color: #94a3b8;">Сформировано 10 сек назад</span>
+                    </div>
+
+                    <div style="font-size: 11px; color: #64748b;">Рекомендуемое действие:</div>
+                    <div class="rec-action">Move LAF Up (+1 шаг) <span style="font-size: 11px; color: #10b981; background: #ecfdf5; padding: 2px 6px; border-radius: 4px;">+15% к Yield</span></div>
+                    <p style="font-size: 12px; color: #475569;">Фиксируется повышенный темп бронирований за последние 24 часа. Конкуренты подняли минимальный тариф.</p>
+
+                    <!-- Кнопка "Показать обоснование (US2)" - Правка 2 -->
+                    <div>
+                        <button class="btn-link" onclick="openModal()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Показать обоснование (US2)
+                        </button>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px;">
+                        <button class="btn">Отклонить</button>
+                        <button class="btn btn-primary">Применить</button>
+                    </div>
+                </div>
+
+                <!-- Вариант 1 (Б) - Правка 5 (Точечная коррекция) -->
+                <div class="card copilot-card">
+                    <div class="copilot-card-header">
+                        <div class="copilot-title" style="color: #0d9488;">
+                            Точечная коррекция параметров
+                        </div>
+                        <span class="badge" style="background: #ccfbf1; color: #0f766e;">8 параметров</span>
+                    </div>
+
+                    <!-- Таблица параметров (Правка 5: Min = 2, CMB/BRRW = цифры, ручные изменения) -->
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>Параметр</th>
+                                <th>Pr</th>
+                                <th>LS</th>
+                                <th>Min</th>
+                                <th>Fix</th>
+                                <th>Adj</th>
+                                <th>Ovb</th>
+                                <th>Cmb</th>
+                                <th>Brrw</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="color: #64748b;">Текущее</td>
+                                <td>12</td>
+                                <td>A</td>
+                                <td>100</td>
+                                <td>0</td>
+                                <td>+2</td>
+                                <td>5</td>
+                                <td>1</td>
+                                <td>0</td>
+                            </tr>
+                            <tr style="background: #f0fdf4; font-weight: 600; color: #166534;">
+                                <td>ИИ Совет</td>
+                                <td><input type="text" value="14" onchange="enableManualSave()"></td>
+                                <td><input type="text" value="B" onchange="enableManualSave()"></td>
+                                <td><input type="text" value="2" onchange="enableManualSave()"></td> <!-- Min скорректирован на 2 (Правка 5) -->
+                                <td><input type="text" value="0" onchange="enableManualSave()"></td>
+                                <td><input type="text" value="+4" onchange="enableManualSave()"></td>
+                                <td><input type="text" value="3" onchange="enableManualSave()"></td>
+                                <td><input type="text" value="2" onchange="enableManualSave()"></td> <!-- CMB теперь цифра (Правка 5) -->
+                                <td><input type="text" value="1" onchange="enableManualSave()"></td> <!-- BRRW теперь цифра (Правка 5) -->
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                        <button class="btn-link" onclick="openModal()">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Показать обоснование (US2)
+                        </button>
+
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn">Отклонить</button>
+                            <button class="btn btn-primary" id="btn-apply-params">Применить параметры</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ИСТОРИЯ ЗАГРУЗКИ (Правка 3: Выручка убрана) -->
+            <div class="card">
+                <h3 style="font-size: 14px; margin-bottom: 12px;">История загрузки и динамика подклассов рейса SU-1420</h3>
+                
+                <div class="metrics-row">
+                    <!-- Выручка удалена согласно правке №3 -->
+                    <div class="metric-card">
+                        <div class="metric-label">Прогноз LoadFactor</div>
+                        <div class="metric-value" style="color: #2563eb;">92%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Свободно мест</div>
+                        <div class="metric-value">28 из 180</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Темп бронирования (Speed)</div>
+                        <div class="metric-value" style="color: #10b981;">+4.2 мест/день</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB 2: US1 РЕДАКТИРОВАНИЕ РЕЙСОВ (Правка 4 & 6) -->
+        <div id="tab-us1-edit" class="tab-panel">
+            <div class="card">
+                <h3 style="font-size: 15px; margin-bottom: 12px;">Edit 1 Flights (Редактирование рейса)</h3>
+
+                <div class="action-row">
+                    <span style="font-weight: 600; color: #64748b; margin-top: 8px;">1. Action:</span>
+
+                    <!-- Каскадный список действий (Правка 6) -->
+                    <div class="dropdown-menu-wrapper">
+                        <div class="dropdown-select-btn" onclick="toggleCascadeMenu()">
+                            <span id="selected-action-label">Cabin Actions / LAF Actions / Move LAF Up</span>
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+
+                        <div class="cascade-menu" id="cascade-menu" style="display: none;">
+                            <!-- Column 1 -->
+                            <div class="menu-column">
+                                <div class="menu-item" onmouseenter="showSubMenu('flight-actions')">Flight Actions <span>›</span></div>
+                                <div class="menu-item active" onmouseenter="showSubMenu('cabin-actions')">Cabin Actions <span>›</span></div>
+                            </div>
+
+                            <!-- Column 2 -->
+                            <div class="menu-column" id="submenu-flight-actions" style="display: none;">
+                                <div class="menu-item">Undo The Last Action</div>
+                                <div class="menu-item">Revert To Nightly Capture</div>
+                                <div class="menu-item">Open Flight</div>
+                                <div class="menu-item">Close Flight</div>
+                                <div class="menu-item">Open Segment</div>
+                                <div class="menu-item">Close Segment</div>
+                            </div>
+
+                            <div class="menu-column" id="submenu-cabin-actions">
+                                <div class="menu-item" onmouseenter="showSubMenu2('auth-cap')">Authorized Capacity Actions <span>›</span></div>
+                                <div class="menu-item" onmouseenter="showSubMenu2('manual-adj')">Manual Adjustments <span>›</span></div>
+                                <div class="menu-item active" onmouseenter="showSubMenu2('laf-actions')">LAF Actions <span>›</span></div>
+                            </div>
+
+                            <!-- Column 3 -->
+                            <div class="menu-column" id="sub2-auth-cap" style="display: none;">
+                                <div class="menu-item">Set OVB Factor</div>
+                                <div class="menu-item">Edit Adjustment</div>
+                                <div class="menu-item">Set CMB</div>
+                            </div>
+
+                            <div class="menu-column" id="sub2-manual-adj" style="display: none;">
+                                <div class="menu-item">Set Protection</div>
+                                <div class="menu-item">Set Seat Availability</div>
+                                <div class="menu-item">Set Segment Limit</div>
+                            </div>
+
+                            <div class="menu-column" id="sub2-laf-actions">
+                                <div class="menu-item">Increase Availability to LAF</div>
+                                <div class="menu-item active" onclick="selectAction('Move LAF Up')">Move LAF Up</div>
+                                <div class="menu-item">Move LAF Down</div>
+                                <div class="menu-item">Set Availability in LAF</div>
+                                <div class="menu-item">Set AU Below LAF to 0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Добавляемые параметры при выборе Move LAF Up (Правка 4) -->
+                    <div class="param-inputs-grid" id="laf-params-block">
+                        <div class="param-control-group">
+                            <label>Offset Y</label>
+                            <div class="number-stepper">
+                                <button onclick="stepVal('off-y', -1)">−</button>
+                                <input type="text" id="off-y" value="0">
+                                <button onclick="stepVal('off-y', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="param-control-group">
+                            <label>Set available seats Y</label>
+                            <div class="number-stepper">
+                                <button onclick="stepVal('avail-y', -1)">−</button>
+                                <input type="text" id="avail-y" value="0">
+                                <button onclick="stepVal('avail-y', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="param-control-group">
+                            <label>Offset C</label>
+                            <div class="number-stepper">
+                                <button onclick="stepVal('off-c', -1)">−</button>
+                                <input type="text" id="off-c" value="0">
+                                <button onclick="stepVal('off-c', 1)">+</button>
+                            </div>
+                        </div>
+
+                        <div class="param-control-group">
+                            <label>Set available seats C</label>
+                            <div class="number-stepper">
+                                <button onclick="stepVal('avail-c', -1)">−</button>
+                                <input type="text" id="avail-c" value="0">
+                                <button onclick="stepVal('avail-c', 1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="margin-top: 20px; text-align: right;">
+                    <button class="btn btn-primary">Сохранить изменения</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: US3 МАССОВЫЕ ДЕЙСТВИЯ & ФИЛЬТРЫ (Правка 7) -->
+        <div id="tab-us3-mass" class="tab-panel">
+            <div class="card">
+                <h3 style="font-size: 15px; margin-bottom: 12px;">US3: Панель фильтрации массовых действий</h3>
+
+                <!-- Панель фильтров со скриншота 1 (Правка 7) -->
+                <div class="filter-panel">
+                    
+                    <!-- 1. Дата вылета с вызовом календаря со скриншота 2 -->
+                    <div class="filter-group">
+                        <label>Дата вылета <span style="color: #3b82f6; font-size: 10px;">Настройки: от 0 до 1</span></label>
+                        <div class="date-range-wrapper">
+                            <input type="text" class="filter-input" value="05/08/2026  →  06/08/2026" readonly onclick="toggleCalendar()">
+                            <svg class="calendar-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" onclick="toggleCalendar()"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+
+                        <!-- Выпадающий Двухмесячный Календарь (Правка 7, скриншот 2) -->
+                        <div class="calendar-popup" id="calendar-popup">
+                            <div class="calendar-months">
+                                <!-- Месяц 1 -->
+                                <div class="calendar-month">
+                                    <div class="calendar-month-title">« &nbsp; Авг 2026</div>
+                                    <div class="calendar-grid">
+                                        <div class="day-header">Пн</div><div class="day-header">Вт</div><div class="day-header">Ср</div><div class="day-header">Чт</div><div class="day-header">Пт</div><div class="day-header">Сб</div><div class="day-header">Вс</div>
+                                        <div class="day-cell muted">27</div><div class="day-cell muted">28</div><div class="day-cell muted">29</div><div class="day-cell muted">30</div><div class="day-cell muted">31</div><div class="day-cell">1</div><div class="day-cell">2</div>
+                                        <div class="day-cell">3</div><div class="day-cell">4</div><div class="day-cell selected">5</div><div class="day-cell selected">6</div><div class="day-cell">7</div><div class="day-cell">8</div><div class="day-cell">9</div>
+                                        <div class="day-cell">10</div><div class="day-cell">11</div><div class="day-cell">12</div><div class="day-cell">13</div><div class="day-cell">14</div><div class="day-cell">15</div><div class="day-cell">16</div>
+                                        <div class="day-cell">17</div><div class="day-cell">18</div><div class="day-cell">19</div><div class="day-cell">20</div><div class="day-cell">21</div><div class="day-cell">22</div><div class="day-cell">23</div>
+                                        <div class="day-cell">24</div><div class="day-cell">25</div><div class="day-cell">26</div><div class="day-cell">27</div><div class="day-cell">28</div><div class="day-cell">29</div><div class="day-cell">30</div>
+                                        <div class="day-cell">31</div><div class="day-cell muted">1</div><div class="day-cell muted">2</div><div class="day-cell muted">3</div><div class="day-cell muted">4</div><div class="day-cell muted">5</div><div class="day-cell muted">6</div>
+                                    </div>
+                                </div>
+
+                                <!-- Месяц 2 -->
+                                <div class="calendar-month">
+                                    <div class="calendar-month-title">Сен 2026 &nbsp; »</div>
+                                    <div class="calendar-grid">
+                                        <div class="day-header">Пн</div><div class="day-header">Вт</div><div class="day-header">Ср</div><div class="day-header">Чт</div><div class="day-header">Пт</div><div class="day-header">Сб</div><div class="day-header">Вс</div>
+                                        <div class="day-cell muted">31</div><div class="day-cell">1</div><div class="day-cell">2</div><div class="day-cell">3</div><div class="day-cell">4</div><div class="day-cell">5</div><div class="day-cell">6</div>
+                                        <div class="day-cell">7</div><div class="day-cell">8</div><div class="day-cell">9</div><div class="day-cell">10</div><div class="day-cell">11</div><div class="day-cell">12</div><div class="day-cell">13</div>
+                                        <div class="day-cell">14</div><div class="day-cell">15</div><div class="day-cell">16</div><div class="day-cell">17</div><div class="day-cell">18</div><div class="day-cell">19</div><div class="day-cell">20</div>
+                                        <div class="day-cell">21</div><div class="day-cell">22</div><div class="day-cell">23</div><div class="day-cell">24</div><div class="day-cell">25</div><div class="day-cell">26</div><div class="day-cell">27</div>
+                                        <div class="day-cell">28</div><div class="day-cell">29</div><div class="day-cell">30</div><div class="day-cell muted">1</div><div class="day-cell muted">2</div><div class="day-cell muted">3</div><div class="day-cell muted">4</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Presets -->
+                            <div class="calendar-presets">
+                                <span>Следующие:</span>
+                                <span class="preset-btn">7</span>
+                                <span class="preset-btn">30</span>
+                                <span class="preset-btn">90</span>
+                                <span class="preset-btn">180</span>
+                                <span class="preset-btn">360</span>
+                                <span>дней</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- 2. Аэропорт вылета -->
+                    <div class="filter-group">
+                        <label>Аэропорт вылета</label>
+                        <input type="text" class="filter-input" placeholder="Например LLK, AEP">
+                    </div>
+
+                    <!-- 3. Аэропорт прилета -->
+                    <div class="filter-group">
+                        <label>Аэропорт прилета</label>
+                        <input type="text" class="filter-input" placeholder="Например AEP, LLK">
+                    </div>
+
+                    <!-- 4. Тип ВС -->
+                    <div class="filter-group">
+                        <label>Тип ВС</label>
+                        <input type="text" class="filter-input" placeholder="Например SU9, 32N">
+                    </div>
+
+                    <!-- 5. Временной интервал -->
+                    <div class="filter-group">
+                        <label>Временной интервал</label>
+                        <div style="display: flex; gap: 4px;">
+                            <input type="text" class="filter-input" value="0" style="text-align: center;">
+                            <input type="text" class="filter-input" value="0" style="text-align: center;">
+                        </div>
+                    </div>
+
+                    <!-- 6. Номер рейса -->
+                    <div class="filter-group">
+                        <label>Номер рейса <span style="color: #94a3b8;">ⓘ</span></label>
+                        <input type="text" class="filter-input" placeholder="Например 1-5, 8, 110-200">
+                    </div>
+
+                    <!-- 7. Исключение рейса -->
+                    <div class="filter-group">
+                        <label>Исключение рейса <span style="color: #94a3b8;">ⓘ</span></label>
+                        <input type="text" class="filter-input" placeholder="Например 1-5, 8, 110-200">
+                    </div>
+
+                    <!-- 8. Ответственный -->
+                    <div class="filter-group">
+                        <label>Ответственный</label>
+                        <input type="text" class="filter-input" placeholder="Например Иванов, Петров">
+                    </div>
+
+                    <!-- 9. День недели вылета -->
+                    <div class="filter-group">
+                        <label>День недели вылета</label>
+                        <input type="text" class="filter-input" placeholder="Например ПН, ВТ">
+                    </div>
+
+                    <!-- 10. Группа маршрутов -->
+                    <div class="filter-group">
+                        <label>Группа маршрутов</label>
+                        <div style="display: flex; gap: 2px;">
+                            <button class="btn btn-primary" style="padding: 4px 8px; border-radius: 4px 0 0 4px;">Все</button>
+                            <button class="btn" style="padding: 4px 8px; border-radius: 0 4px 4px 0;">Любой</button>
+                        </div>
+                    </div>
+
+                    <!-- 11. Сравнение с маршрутом -->
+                    <div class="filter-group" style="grid-column: span 2;">
+                        <label>Сравнение с маршрутом</label>
+                        <input type="text" class="filter-input" placeholder="Например SVXKHV, CEKDYU">
+                    </div>
+
+                    <!-- 12. Кнопки действия -->
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" style="padding: 8px 24px;">Поиск</button>
+                        <button class="btn" style="padding: 8px 16px;">Очистить</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 2. MODAL WINDOW FOR USER STORY 2 (Правка 2) -->
+    <div class="modal-overlay" id="us2-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 style="font-size: 15px; font-weight: 700; color: #0f172a;">Обоснование рекомендации Copilot</h3>
+                <button class="btn" style="padding: 2px 8px;" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 12px; color: #475569; margin-bottom: 14px;">
+                    Рекомендация <b>Move LAF Up (+1 шаг)</b> сформирована на основе комплексного анализа текущих рыночных факторов и динамики бронирования:
+                </p>
+
+                <div class="factor-box">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 2px;">1. Динамика спроса и Pace</div>
+                    <div style="font-size: 11px; color: #475569;">Зафиксирован всплеск темпа бронирований за 24 ч (+4.2 мест/день vs среднеисторические 1.8 мест/день). Нагрузка рейса достигла 84%.</div>
+                </div>
+
+                <div class="factor-box" style="border-left-color: #10b981;">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 2px;">2. Мониторинг конкурентов</div>
+                    <div style="font-size: 11px; color: #475569;">Конкурент S7 на аналогичном слоте 14:20 поднял минимальный доступный тариф на 12%.</div>
+                </div>
+
+                <div class="factor-box" style="border-left-color: #8b5cf6;">
+                    <div style="font-weight: 700; color: #1e293b; margin-bottom: 2px;">3. Исторический контекст</div>
+                    <div style="font-size: 11px; color: #475569;">В аналогичные дни вылета NDO 14 исторически показывает вымывание нижних подклассов на 95%.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-link" style="text-decoration: none;" onclick="alert('Переход к деталям аналогичных рейсов...')">
+                    → Перейти к деталям похожих рейсов
+                </button>
+                <button class="btn btn-primary" onclick="closeModal()">Понятно, закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Переключение вкладок
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Модальное окно (US2)
+        function openModal() {
+            document.getElementById('us2-modal').classList.add('open');
+        }
+        function closeModal() {
+            document.getElementById('us2-modal').classList.remove('open');
+        }
+
+        // Каскадное меню действий (US1)
+        function toggleCascadeMenu() {
+            const menu = document.getElementById('cascade-menu');
+            menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        function showSubMenu(id) {
+            document.getElementById('submenu-flight-actions').style.display = 'none';
+            document.getElementById('submenu-cabin-actions').style.display = 'none';
+            if(id === 'flight-actions') document.getElementById('submenu-flight-actions').style.display = 'block';
+            if(id === 'cabin-actions') document.getElementById('submenu-cabin-actions').style.display = 'block';
+        }
+
+        function showSubMenu2(id) {
+            document.getElementById('sub2-auth-cap').style.display = 'none';
+            document.getElementById('sub2-manual-adj').style.display = 'none';
+            document.getElementById('sub2-laf-actions').style.display = 'none';
+            
+            if(id === 'auth-cap') document.getElementById('sub2-auth-cap').style.display = 'block';
+            if(id === 'manual-adj') document.getElementById('sub2-manual-adj').style.display = 'block';
+            if(id === 'laf-actions') document.getElementById('sub2-laf-actions').style.display = 'block';
+        }
+
+        function selectAction(name) {
+            document.getElementById('selected-action-label').innerText = 'Cabin Actions / LAF Actions / ' + name;
+            document.getElementById('cascade-menu').style.display = 'none';
+        }
+
+        // Степпер для параметров (Правка 4)
+        function stepVal(id, delta) {
+            const input = document.getElementById(id);
+            let val = parseInt(input.value) || 0;
+            input.value = val + delta;
+        }
+
+        // Ручной ввод параметров (Правка 5)
+        function enableManualSave() {
+            const btn = document.getElementById('btn-apply-params');
+            btn.innerText = 'Применить ручные изменения';
+            btn.style.background = '#e11d48';
+            btn.style.borderColor = '#e11d48';
+        }
+
+        // Календарь (Правка 7)
+        function toggleCalendar() {
+            const cal = document.getElementById('calendar-popup');
+            cal.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
